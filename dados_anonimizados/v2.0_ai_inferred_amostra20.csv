@@ -1,0 +1,27 @@
+image_id,source_book,source_page,dx_inferido,dx_original_texto,localizacao,idade,sexo,fototipo,confianca,justificativa
+Glossario_p0519_i00,Glossario,519,mel,Melanoma,,,,,0.95,Termo HAM10000 explicito
+Glossario_p0328_i00,Glossario,328,mel,Melanoma de lentigo maligno,,,,,0.9,Lentigo maligno melanoma e subtipo de melanoma (mel)
+Glossario_p0423_i00,Glossario,423,mel,Lentigo maligno extrafacial (dermatoscopia),,,,,0.85,Lentigo maligno = melanoma in situ. Permissivo: mel
+Glossario_p0141_i01,Glossario,141,bcc,Carcinoma basocelular,,,,,1.0,Termo HAM10000 explicito
+Glossario_p0530_i00,Glossario,530,bcc,Carcinoma basocelular,,,,,1.0,Termo HAM10000 explicito
+Azulay_p0613_i02,Azulay,613,bcc,carcinoma basocelular,,,,,0.95,Match regex carcinoma\s+basocelular -> carcinoma basocelular (caption if in_caption else context)
+Glossario_p0401_i00,Glossario,401,nv,Nevo melanocitico congenito,,,,,0.95,Termo HAM10000 explicito (nv = nevus melanocitico)
+Azulay_p0611_i03,Azulay,611,nv,nevo,,,,,0.70,Match regex \bnevo\b(?!\s+verrugoso)(?!\s+epid)(?!\s+sebac) -> nevo (caption if in_caption else context)
+Azulay_p0612_i01,Azulay,612,nv,nevo,,,,,0.70,Match regex \bnevo\b(?!\s+verrugoso)(?!\s+epid)(?!\s+sebac) -> nevo (caption if in_caption else context)
+Glossario_p0345_i00,Glossario,345,bkl,Queratose seborreica (dermatoscopia),,,,,0.95,Termo HAM10000 explicito (bkl inclui queratose seborreica)
+Azulay_p0608_i02,Azulay,608,bkl,ceratose  seborreica,,,,,0.85,Match regex cerat[oô]se\s+seborreica -> ceratose  seborreica (caption if in_caption else context)
+Azulay_p0612_i02,Azulay,612,bkl,ceratose seborreica,face,,,,0.95,Match regex cerat[oô]se\s+seborreica -> ceratose seborreica (caption if in_caption else context)
+Azulay_p0606_i02,Azulay,606,akiec,ceratose actínica,,,,,0.95,Match regex cerat[oô]se\s+act[íi]nica -> ceratose actínica (caption if in_caption else context)
+Azulay_p0608_i01,Azulay,608,akiec,ceratose actínica,,,,,0.95,Match regex cerat[oô]se\s+act[íi]nica -> ceratose actínica (caption if in_caption else context)
+Azulay_p0609_i01,Azulay,609,akiec,doença de bowen,,,,,0.95,Match regex doen[çc]a\s+de\s+bowen -> doença de bowen (caption if in_caption else context)
+Glossario_p0446_i00,Glossario,446,df,Dermatofibroma (dermatoscopia),,,,,0.9,Termo HAM10000 explicito; imagem e dermatoscopia
+Azulay_p0659_i02,Azulay,659,df,dermatofibroma,,,,,0.85,Match regex \bdermatofibroma\b -> dermatofibroma (caption if in_caption else context)
+Glossario_p0445_i00,Glossario,445,df,dermatofibroma,,,,,0.85,Match regex \bdermatofibroma\b -> dermatofibroma (caption if in_caption else context)
+Azulay_p0699_i01,Azulay,699,vasc,granuloma piogênico,,,,,0.85,Match regex granuloma\s+piog[êe]nico -> granuloma piogênico (caption if in_caption else context)
+Glossario_p0426_i00,Glossario,426,vasc,angioma,,,,,0.60,Match regex \bangioma\b -> angioma (caption if in_caption else context)
+Glossario_p0426_i01,Glossario,426,vasc,angioma,,,,,0.60,Match regex \bangioma\b -> angioma (caption if in_caption else context)
+Glossario_p0118_i00,Glossario,118,outros,Psoríase (placas),,,,,0.95,Psoríase nao mapeia para 7 classes HAM10000 (apenas tumores cutaneos)
+Glossario_p0039_i00,Glossario,39,outros,Exantema roseoliforme febril,,,,,0.9,Exantema febril nao e lesao tumoral
+Glossario_p0649_i02,Glossario,649,outros,Granuloma anular,,,,,0.85,Granuloma anular nao mapeia para 7 classes HAM10000
+Glossario_p0381_i07,Glossario,381,outros,Verruga comum,,,,,0.9,Verruga viral nao esta nas 7 classes
+Glossario_p0257_i00,Glossario,257,outros,Glossite romboidal media,língua,,,,0.9,"Lesao mucosa por C. albicans, nao tumor cutaneo"
