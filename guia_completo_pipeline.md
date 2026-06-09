@@ -86,6 +86,8 @@ O ponto-chave do trabalho: **o técnico (CNN) só olha a imagem**; os dados clí
 
 **Resumo em uma linha:** a CNN **transforma a imagem num vetor de 256 números** (extrai características); o clínico é anexado **depois**; e um **classificador clássico** decide. A CNN é treinada **uma única vez** e nunca re-treinada para a decisão.
 
+> ⭐ **A campeã usa imagem E dados clínicos — ela é multimodal.** Foi a configuração que performou melhor (AUC 0,883 / F1 0,409). A diferença para a versão multimodal que falhou **não é** *se* usa o clínico, e sim **onde**: aqui o clínico entra na **mesa do decisor (XGBoost), em formato *one-hot***, e não dentro da rede. Sempre que este guia disser **"visão isolada"**, isso se refere **apenas à CNN** (que só olha a imagem) — o **pipeline completo continua usando imagem + clínico**.
+
 ---
 
 ### 3.1 A CNN trata dados clínicos? (Não — e isso foi de propósito)
@@ -334,10 +336,12 @@ Números-âncora (teste *held-out* por lesão, XGBoost+SMOTE):
 
 | Pipeline | F1-Macro | AUC OVR |
 |---|---|---|
-| Multimodal (clínico na rede) | 0,290 | 0,763 |
-| Visão isolada | 0,313 | 0,815 |
-| + balanço de imagem | 0,373 | 0,853 |
-| **+ clínico one-hot no classificador (campeão)** | **0,409** | **0,883** |
+| Multimodal — clínico fundido na rede | 0,290 | 0,763 |
+| CNN só-imagem (sem clínico) | 0,313 | 0,815 |
+| CNN só-imagem + balanço de imagem | 0,373 | 0,853 |
+| **★ CAMPEÃ: imagem + clínico (one-hot no XGBoost) + balanço** | **0,409** | **0,883** |
+
+*(Todas as linhas usam a CNN como extratora; a campeã é a multimodal feita "do jeito certo" — imagem pela CNN e clínico no classificador.)*
 
 Leitura em uma frase: *"corrigir o vazamento honesta os números; balancear na imagem é o que mais ajuda; o metadado só soma se fundido no classificador; e calibrando o limiar a ferramenta atinge 85% de sensibilidade para câncer de pele — útil como segunda opinião, não como diagnóstico autônomo."*
 
