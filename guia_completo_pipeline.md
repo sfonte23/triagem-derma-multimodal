@@ -57,19 +57,70 @@ Dois fatos críticos:
 
 ## 3. Visão geral do pipeline (o mapa)
 
+### A analogia que resume tudo
+
+Imagine uma **triagem em duas pessoas**:
+
+1. **Um técnico que só olha a foto** da lesão. Ele não conversa com o paciente, não vê a ficha. Ele apenas observa a imagem e preenche uma **planilha com 256 medidas** descrevendo o que viu (cor, textura, bordas, padrões…). Ele faz isso sempre do mesmo jeito, treinado uma vez. → **Essa é a CNN.** A planilha de 256 números é o **embedding**.
+2. **Um médico decisor** que pega essa planilha de 256 medidas **e também** a ficha do paciente (idade, sexo, local da lesão) e, juntando tudo, decide: "suspeito → encaminhar" ou "tranquilo". → **Esse é o XGBoost** (o classificador).
+
+O ponto-chave do trabalho: **o técnico (CNN) só olha a imagem**; os dados clínicos entram **só na mesa do médico decisor (XGBoost)**, não antes.
+
+### O desenho do que fizemos (pipeline campeão)
+
 ```
-                          [TREINO, uma vez]
-imagem 320×320 ──► EfficientNetB3 ──► embedding (vetor de 256 números)
-                                              │
-metadado clínico (one-hot) ───────────────────┤  (fundido AQUI, no classificador)
-                                              ▼
-                                   XGBoost (+ SMOTE / balanceamento)
-                                              │
-                                              ▼
-                              P(maligna) ≥ limiar?  ──► encaminhar ou não
+   ┌─────────────────── TREINADO UMA VEZ ───────────────────┐
+   │                                                         │
+ FOTO 320×320 ─►  CNN (EfficientNetB3)  ─►  EMBEDDING         │   "o técnico que só vê a foto"
+ (só pixels)        (só imagem!)            [256 números]     │
+   └─────────────────────────────────────────────┬───────────┘
+                                                  │
+ FICHA CLÍNICA ──► vira colunas 0/1 (one-hot) ────┤  ← entra SÓ AQUI
+ (idade, sexo,                                    │
+  localização)                                    ▼
+                                        XGBoost  (+ balanceamento)   "o médico decisor"
+                                                  │
+                                                  ▼
+                                  P(maligna) ≥ limiar?  ─► encaminhar / não encaminhar
 ```
 
-Ideia central: a CNN **extrai características** (vira a imagem num vetor), e um **classificador clássico** toma a decisão. A CNN é treinada **uma vez** e nunca re-treinada para a decisão.
+**Resumo em uma linha:** a CNN **transforma a imagem num vetor de 256 números** (extrai características); o clínico é anexado **depois**; e um **classificador clássico** decide. A CNN é treinada **uma única vez** e nunca re-treinada para a decisão.
+
+---
+
+### 3.1 A CNN trata dados clínicos? (Não — e isso foi de propósito)
+
+No pipeline **final/campeão**, a CNN é usada **unicamente para extrair os embeddings da imagem**. Ela **nunca recebe** idade, sexo ou localização. Veja o que entra e sai de cada peça:
+
+| Peça | O que ENTRA | O que SAI |
+|---|---|---|
+| **CNN** (EfficientNetB3) | só os **pixels** da foto (320×320×3) | **embedding**: 256 números |
+| **XGBoost** (decisor) | embedding (256) **+** clínico *one-hot* (~18 colunas) | probabilidade de cada classe |
+
+> **Por que separar?** Nós **testamos** a outra forma — uma CNN "multimodal" que processava a imagem **e** o clínico juntos, lá dentro da rede. Resultado: ficou **pior** (o sinal clínico se perdia sob o desbalanceamento). Quando movemos o clínico para **fora da rede**, direto no decisor, ele passou a **ajudar**. Por isso, no campeão, a CNN é 100% visual. (Detalhe completo na §13.)
+
+Em uma frase para a banca: *"A CNN é só os olhos — ela vira a foto em números. Quem decide, juntando esses números com a ficha do paciente, é o XGBoost."*
+
+---
+
+### 3.2 O que é um *embedding*? (com exemplo concreto)
+
+Um **embedding** é simplesmente uma **lista de números** (um *vetor*) que a CNN gera para **resumir** a imagem. No nosso caso, **256 números**. Cada número representa uma "característica visual" abstrata que a rede aprendeu sozinha (não tem nome legível como "borda escura" — é matemático), e o conjunto funciona como um **código de barras / impressão digital** da lesão.
+
+A propriedade mágica: **lesões parecidas geram listas de números parecidas**; lesões diferentes geram listas distantes.
+
+```
+ Foto de um MELANOMA   ─► CNN ─►  [ 0.12, -1.45,  0.98, 0.03, ... , 0.07 ]   (256 números)
+ Foto de OUTRO melanoma ─► CNN ─► [ 0.10, -1.38,  1.02, 0.05, ... , 0.09 ]   ← PARECIDO (perto)
+ Foto de um NEVO (pinta) ─► CNN ─► [ -0.9,  0.20, -0.50, 1.30, ... ,-0.8 ]   ← DIFERENTE (longe)
+```
+
+**Três formas de entender (escolha a que te agrada):**
+- **Ficha de medidas:** é como descrever uma pessoa por 256 medidas (altura, peso, etc.) — só que aqui as "medidas" são 256 traços visuais que a própria rede inventou.
+- **Coordenadas num mapa:** pense num "mapa de lesões" de 256 dimensões. Cada foto vira um **ponto** nesse mapa. Melanomas caem numa região, nevos em outra. O decisor aprende a traçar as fronteiras desse mapa.
+- **Código de barras:** cada lesão ganha um código de 256 números; fotos da mesma "cara" recebem códigos semelhantes.
+
+**Por que isso é útil?** Porque trabalhar com 256 números é muito mais fácil (e leve) do que com a foto inteira (320×320×3 = 307.200 valores). A CNN faz o trabalho pesado de "ver" uma vez; depois, qualquer classificador simples decide rápido em cima dos 256 números — inclusive dá para anexar a ficha clínica e re-treinar o decisor **sem nunca mais tocar na rede pesada**.
 
 ---
 
