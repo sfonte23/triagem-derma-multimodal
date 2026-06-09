@@ -176,27 +176,40 @@ Igual ao olho humano: primeiro percebe contornos, depois junta em objetos.
 
 ## 5. A arquitetura do nosso modelo (peça por peça)
 
-A rede que **treinamos** tem **duas vias** (*dual-branch*) e **fusão tardia** (*late fusion* = cada via processa sua entrada separada, e elas só se juntam no fim). Desenho:
+A campeã tem **duas partes**: **(A) a CNN extratora** — só-imagem, vira a foto num embedding — e **(B) o decisor XGBoost** — junta o embedding com o clínico e decide. Esta seção detalha a **parte A (a CNN da campeã)**; a parte B está na §11. **Atenção:** a CNN da campeã é **só-imagem** — ela **não tem** via clínica dentro.
+
+### 5.1 A CNN da campeã (só-imagem) — é esta que gera o embedding
 
 ```
-  VIA DE IMAGEM
-  foto 320×320 ─► EfficientNetB3 ─► GAP (1536) ─► Dense(128) ─┐
-                                                              ├─► concatena ─► fused_dense_1 (256) ─► Softmax(7)
-  VIA CLÍNICA                                                 │            (EMBEDDING)
-  idade/sexo/local ─► MLP ─► (8) ──────────────────────────────┘
+ foto 320×320 ─► EfficientNetB3 ─► GAP (1536) ─► Dense(128) ─► [ camada de 256 ] ─► Dense(128) ─► Softmax(7)
+                                                                  ↑ EMBEDDING                      ↑ só no treino
+                                                              (o que vai pro XGBoost)         (descartada na campeã)
 ```
 
 Peça por peça:
 - **EfficientNetB3:** a CNN (família EfficientNet, Google 2019). "B3" = 3º tamanho da família. Usa *compound scaling* (cresce profundidade, largura e resolução juntas) → muita performance com ~12 milhões de "botões". Vem pré-treinada no ImageNet.
 - **GAP (Global Average Pooling):** a CNN cospe uma "grade" de ativações; o GAP tira a **média** de cada canal e devolve **um vetor de 1536 números** (o resumo visual bruto). Analogia: tirar a "nota média" de cada detector.
-- **Dense(128):** camada que comprime 1536 → 128 (destila o essencial).
-- **MLP (Perceptron Multicamadas):** rede simples (sem convolução) que processa os 3 metadados → 8 números.
-- **fused_dense_1 (256):** junta imagem + clínico → **é daqui que sai o embedding de 256** que usamos depois.
-- **Softmax(7):** a "boca" da rede, que dá uma probabilidade para cada uma das 7 classes (somam 100%). O modelo escolhe a maior.
+- **Dense(128):** comprime 1536 → 128 (destila o essencial).
+- **Camada de 256 (o EMBEDDING):** é **daqui que sai o vetor de 256 números** que entregamos ao XGBoost. (Nos códigos: `img_fused_256` nas redes só-imagem; `fused_dense_1` na variante multimodal.)
+- **Softmax(7):** a "boca" da rede, com uma probabilidade por classe. **Só é usada durante o treino da CNN** (para ela aprender a ver). Na **campeã**, depois de treinar, **jogamos a Softmax fora** e usamos apenas o embedding → quem decide é o XGBoost.
 
-> ⚠️ **Ligação com a campeã:** essa rede multimodal completa (com a via clínica dentro) é a que **falhou** mais (clínico se perde no treino). Na **campeã**, usamos a versão **só-imagem** dessa rede como extratora (pegamos o embedding visual) e levamos o clínico para o XGBoost. Mesma "espinha", clínico no lugar certo.
+**Por que descartamos a Softmax:** sob desbalanceamento, essa camada final aprende a sempre apostar em `nv` (o colapso da §7). Os "olhos" (a parte de extração) continuam bons; só a "boca" (decisão) é ruim — por isso a trocamos por um classificador clássico (§10).
 
-**Softmax — por que é o ponto fraco:** sob desbalanceamento, essa camada final aprende a sempre apostar em `nv` (§7). É por isso que trocamos a "boca" (Softmax) por um classificador clássico.
+### 5.2 A variante que testamos e DESCARTAMOS (clínico dentro da rede)
+
+Para **provar** que vale a pena tirar o clínico de dentro da rede, treinamos também uma versão **multimodal** com uma 2ª via (uma MLP que processa idade/sexo/localização), fundida lá dentro:
+
+```
+  VIA DE IMAGEM
+  foto ─► EfficientNetB3 ─► GAP ─► Dense(128) ─┐
+                                               ├─► concatena ─► (256) ─► Softmax(7)
+  VIA CLÍNICA (a que descartamos)              │
+  idade/sexo/local ─► MLP ─► (8) ───────────────┘
+```
+- **MLP (Perceptron Multicamadas):** rede simples (sem convolução) que vira os 3 metadados em 8 números.
+- Esta é a versão que **perdeu** (o clínico se dissolve no treino desbalanceado — §13). Ela **não** é a campeã; existe só como termo de comparação no desenho fatorial (§18).
+
+➡️ **Resumindo:** campeã = CNN da §5.1 (só-imagem) **+** clínico *one-hot* no XGBoost. A via clínica neural da §5.2 ficou de fora.
 
 ---
 
