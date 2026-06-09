@@ -156,6 +156,55 @@ A propriedade mágica: **lesões parecidas geram listas de números parecidas**;
 
 ---
 
+### 3.3 O fluxo completo, passo a passo (onde CADA técnica entra)
+
+Esta é a **linha do tempo** da campeã, do dado bruto à decisão. Repare **onde** cada técnica age — em especial, que **balanceamento na imagem** e **SMOTE** estão em **pontas opostas**:
+
+```
+ETAPA 0 — DADOS                                                        [§2, §9]
+  HAM10000 (10.015 fotos)
+     └─► DIVISÃO AGRUPADA POR LESÃO (lesion_id): 70% treino / 10% val / 20% teste
+         (evita vazamento; nenhuma lesão em mais de um conjunto)
+
+ETAPA 1 — TREINO DA CNN  (uma única vez, no Colab/GPU)                  [§5.1, §6, §12]
+  fotos de TREINO
+     ├─► ★ BALANCEAMENTO NA IMAGEM  ◄── AQUI (antes da CNN): repete fotos das
+     │      (oversample minorias + augmentation)       classes raras + aumenta dados
+     └─► EfficientNetB3 (só-imagem) aprende a "ver"
+  ➜ resultado: uma CNN treinada, que vira "extratora"
+
+ETAPA 2 — EXTRAÇÃO DOS EMBEDDINGS  (uma vez)                            [§3.2]
+  cada foto (treino, val, teste) ─► CNN ─► embedding de 256 números
+  ➜ daqui em diante, trabalhamos SÓ com os 256 números (rápido, em CPU)
+
+ETAPA 3 — TREINO DO DECISOR (XGBoost)                                   [§11, §12, §13]
+  embeddings de TREINO
+     ├─► + CLÍNICO one-hot (idade/sexo/local)  ◄── AQUI entra o clínico
+     ├─► ★ SMOTE  ◄── AQUI (DEPOIS da CNN!): cria embeddings sintéticos
+     │      das classes raras, interpolando os 256 números
+     └─► treina o XGBoost
+  embeddings de TESTE ─► XGBoost ─► probabilidade de cada classe
+
+ETAPA 4 — DECISÃO CLÍNICA                                              [§16]
+  P(maligna) = P(mel)+P(bcc)+P(akiec)  ≥ limiar (~0,05)?
+     └─► SIM → "suspeito, encaminhar"   |   NÃO → "tranquilo"
+```
+
+**Os dois balanceamentos, lado a lado (não confundir):**
+
+| | Balanceamento na imagem | SMOTE |
+|---|---|---|
+| **Onde no fluxo** | ETAPA 1 — **antes/na entrada da CNN** | ETAPA 3 — **depois da CNN**, no decisor |
+| **Atua sobre** | as **fotos** (pixels) | os **embeddings** (256 números) |
+| **Como** | repete fotos raras + *augmentation* | interpola vetores (cria pontos "no meio") |
+| **Analogia** | tirar mais fotos dos casos raros | inventar casos intermediários na planilha |
+
+➡️ Respondendo direto à dúvida: **o SMOTE NÃO entra antes da CNN.** Ele entra na ETAPA 3, sobre os embeddings. O que entra "antes de tudo / na CNN" é o **balanceamento na imagem**. A campeã usa **os dois** — um em cada ponta do fluxo.
+
+> **Importante:** as ETAPAS 0–2 (split + treino da CNN + extração) rodam **uma vez** no Colab (GPU). As ETAPAS 3–4 (clínico + SMOTE + XGBoost + limiar) rodam em **CPU, em segundos**, e podem ser repetidas à vontade **sem re-treinar a CNN** — é isso que torna o pipeline barato e auditável.
+
+---
+
 ## 4. Redes neurais e CNNs
 
 **Rede neural — analogia:** imagine milhões de "botões" (os **pesos**) que controlam uma função. No começo estão aleatórios e a rede chuta tudo errado. O treino vai **girando os botões** aos pouquinhos para errar menos nos exemplos. É só isso: ajustar botões para minimizar erro.
@@ -342,7 +391,7 @@ Todos decidem **sobre os embeddings** (256 ou 1536 números) — nunca sobre pix
 
 ## 12. Desbalanceamento: SMOTE vs balanceamento na imagem
 
-O problema (67:1) pode ser atacado em **dois lugares diferentes**. Analogia geral: faltam exemplos das classes raras — como "criar" mais?
+O problema (67:1) pode ser atacado em **dois lugares diferentes** do fluxo (ver a linha do tempo na §3.3): **antes da CNN**, nas fotos (balanceamento na imagem); ou **depois da CNN**, nos embeddings (SMOTE). Analogia geral: faltam exemplos das classes raras — como "criar" mais?
 
 **SMOTE — inventa exemplos no espaço dos números (embeddings):**
 - Pega dois melanomas reais **vizinhos** e cria um melanoma **sintético no meio do caminho** entre eles (interpola). Não copia — gera um ponto intermediário.
