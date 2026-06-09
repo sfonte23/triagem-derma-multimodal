@@ -1,49 +1,12 @@
 # Python
-venv/
-env/
 __pycache__/
 *.pyc
-.python-version
+.ipynb_checkpoints/
+venv/
 .env
 
-# IDEs
-.vscode/
-.idea/
-*.swp
-
-# Modelos grandes (>50 MB nao cabe no GitHub free)
+# Modelos grandes (nao versionados aqui; ver README)
 *.keras
 *.h5
-*.hdf5
 
-# Datasets
-HAM10000/
-dataset/
-data/
-medical-staff/
-*.xlsx
-
-# Imagens com copyright (livros nao podem ser redistribuidos)
-material_base/
-images_raw/
-base_nacional/
-
-# Outputs intermediarios pesados
-*.npy
-embeddings_cache/
-
-# Credenciais
-.kaggle/
-kaggle.json
-*.key
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb_checkpoints
-
-# Logs
-*.log
+# OBS: os embeddings .npy SAO versionados de proposito (necessarios para auditar os numeros).

@@ -1,0 +1,33 @@
+{
+  "modelo": "multimodal — balanceamento na origem (oversampling+aug de imagem)",
+  "target_per_class_treino": 1000,
+  "classes": [
+    "akiec",
+    "bcc",
+    "bkl",
+    "df",
+    "mel",
+    "nv",
+    "vasc"
+  ],
+  "split": {
+    "train": 7006,
+    "val": 979,
+    "test": 1973
+  },
+  "leakage_check": {
+    "train_test": 0,
+    "train_val": 0,
+    "val_test": 0
+  },
+  "dist_teste": {
+    "nv": 1325,
+    "mel": 212,
+    "bkl": 210,
+    "bcc": 91,
+    "akiec": 79,
+    "vasc": 36,
+    "df": 20
+  },
+  "split_method": "GroupShuffleSplit por lesion_id (70/10/20), SEED=42 — IDENTICO ao nb01/02"
+}
