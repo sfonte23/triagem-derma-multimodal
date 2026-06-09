@@ -1,0 +1,5 @@
+config,f1_macro,auc_ovr
+Visao isolada (imagem),0.313,0.815
+Visao isolada + clinico one-hot,0.371,0.869
+Visao isolada balanceada (imagem),0.373,0.853
+Visao isolada balanceada + clinico one-hot,0.409,0.883
