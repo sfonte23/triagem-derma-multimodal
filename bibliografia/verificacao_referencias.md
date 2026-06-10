@@ -53,4 +53,24 @@ python scripts/_audit_refs.py        # confere citadas vs definidas (órfãs/que
 #   https://api.crossref.org/works?query.bibliographic=<titulo>&rows=1
 ```
 
-> **Acesso aos PDFs:** abertos (open access) — tschandl2018, gessert2020, johnson2019, chawla2002, daneshjou2022, tan2019/lin2017/chen2016 (arXiv). Restritos (paywall) — esteva2017 (Nature), tang2022 (Elsevier), adamson2018 (JAMA). Os PDFs não são versionados aqui (direitos autorais); usar os DOIs acima para acessar cada um.
+## Acesso aos PDFs (validação local)
+
+Os PDFs foram baixados para `docs/tcc/bibliografia/pdfs/` **apenas para validação local** das afirmações do artigo. A pasta é **gitignored** (`**/bibliografia/pdfs/`) — os arquivos **não** vão para os repositórios públicos (direitos autorais). Verificou-se o **título da 1ª página** de cada PDF para garantir que é o artigo certo (dois downloads iniciais vieram de PMC IDs errados que eu havia chutado, e foram **descartados** após essa checagem — reforçando a necessidade do pente fino).
+
+| Chave | PDF local | Fonte |
+|---|---|---|
+| tschandl2018 | ✔ baixado | Nature Scientific Data (OA) |
+| gessert2020 | ✔ baixado | Europe PMC PMC7150512 (OA) |
+| johnson2019 | ✔ baixado | SpringerOpen (OA) |
+| chawla2002 | ✔ baixado | arXiv 1106.1813 |
+| tan2019 | ✔ baixado | arXiv 1905.11946 |
+| lin2017 | ✔ baixado | arXiv 1708.02002 |
+| chen2016 | ✔ baixado | arXiv 1603.02754 |
+| breiman2001 | ✔ baixado | stat.berkeley.edu (cópia do autor) |
+| daneshjou2022 | ✔ baixado | Europe PMC PMC9374341 (OA) |
+| inca2023 | ✔ baixado | inca.gov.br (relatório público) |
+| esteva2017 | 🔗 link | Nature (pago); PMC8382232 é o artigo certo, mas o download é bloqueado — DOI 10.1038/nature21056 |
+| adamson2018 | 🔗 link | JAMA Dermatology (pago) — DOI 10.1001/jamadermatol.2018.2348 |
+| tang2022 | 🔗 link | Elsevier, Medical Image Analysis (pago) — DOI 10.1016/j.media.2021.102307 |
+
+**10 de 13 disponíveis localmente; 3 restritos** (acessar via CAPES/instituição com os DOIs acima).
