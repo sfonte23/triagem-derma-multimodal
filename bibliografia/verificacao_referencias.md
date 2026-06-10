@@ -7,7 +7,8 @@
 - **12 referências verificadas e corretas.**
 - **1 fabricada** (`marcano2021`) → **removida** do artigo e do `.bib`.
 - **1 com metadados errados** (`daneshjou2022`) → **corrigida** (revista/título/DOI).
-- Após a correção: **13 referências, todas reais e citadas** (auditoria `scripts/_audit_refs.py`: 13 citadas = 13 definidas, 0 órfãs, 0 quebradas).
+- **2 artigos acrescentados** na revisão (sugeridos e fornecidos em PDF): `ruiz2011` (SADC para melanoma) e `dreiseitl2009` (ensaio prospectivo — IA auxiliando médicos não especialistas) — ambos verificados no Crossref.
+- Após as correções e inclusões: **15 referências, todas reais e citadas** (auditoria `scripts/_audit_refs.py`: 15 citadas = 15 definidas, 0 órfãs, 0 quebradas).
 
 ---
 
@@ -29,6 +30,8 @@
 | chen2016 | ✅ correta | XGBoost, ACM SIGKDD 2016:785–794 | 10.1145/2939672.2939785 |
 | breiman2001 | ✅ correta | Random Forests, Machine Learning 45(1):5–32, 2001 | 10.1023/A:1010933404324 |
 | inca2023 | ✅ real | INCA, *Estimativa 2023: Incidência de Câncer no Brasil*, Rio de Janeiro | relatório institucional (inca.gov.br) |
+| ruiz2011 | ✅ correta (acrescentada) | Expert Systems with Applications 38(12):15217–15223, 2011 | 10.1016/j.eswa.2011.05.079 |
+| dreiseitl2009 | ✅ correta (acrescentada) | Melanoma Research 19(3):180–184, 2009 (Dreiseitl, Binder, Hable, Kittler) | 10.1097/CMR.0b013e32832a1e41 |
 
 ---
 
@@ -72,5 +75,7 @@ Os PDFs foram baixados para `docs/tcc/bibliografia/pdfs/` **apenas para validaç
 | esteva2017 | 🔗 link | Nature (pago); PMC8382232 é o artigo certo, mas o download é bloqueado — DOI 10.1038/nature21056 |
 | adamson2018 | 🔗 link | JAMA Dermatology (pago) — DOI 10.1001/jamadermatol.2018.2348 |
 | tang2022 | 🔗 link | Elsevier, Medical Image Analysis (pago) — DOI 10.1016/j.media.2021.102307 |
+| ruiz2011 | ✔ baixado | fornecido em PDF (Expert Systems with Applications) |
+| dreiseitl2009 | ✔ baixado | fornecido em PDF (Melanoma Research) |
 
-**10 de 13 disponíveis localmente; 3 restritos** (acessar via CAPES/instituição com os DOIs acima).
+**12 de 15 disponíveis localmente; 3 restritos** (esteva, adamson, tang — acessar via CAPES/instituição com os DOIs acima).
