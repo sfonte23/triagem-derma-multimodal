@@ -72,10 +72,10 @@ Os PDFs foram baixados para `docs/tcc/bibliografia/pdfs/` **apenas para validaç
 | breiman2001 | ✔ baixado | stat.berkeley.edu (cópia do autor) |
 | daneshjou2022 | ✔ baixado | Europe PMC PMC9374341 (OA) |
 | inca2023 | ✔ baixado | inca.gov.br (relatório público) |
-| esteva2017 | 🔗 link | Nature (pago); PMC8382232 é o artigo certo, mas o download é bloqueado — DOI 10.1038/nature21056 |
-| adamson2018 | 🔗 link | JAMA Dermatology (pago) — DOI 10.1001/jamadermatol.2018.2348 |
-| tang2022 | 🔗 link | Elsevier, Medical Image Analysis (pago) — DOI 10.1016/j.media.2021.102307 |
+| esteva2017 | ✔ baixado | via CAPES (Nature) — título conferido na pág. 1 |
+| adamson2018 | ✔ baixado | via CAPES (JAMA Dermatology) — título conferido |
+| tang2022 | ✔ baixado | via CAPES (Elsevier, Medical Image Analysis) — título conferido |
 | ruiz2011 | ✔ baixado | fornecido em PDF (Expert Systems with Applications) |
 | dreiseitl2009 | ✔ baixado | fornecido em PDF (Melanoma Research) |
 
-**12 de 15 disponíveis localmente; 3 restritos** (esteva, adamson, tang — acessar via CAPES/instituição com os DOIs acima).
+**15 de 15 disponíveis localmente** (os 3 restritos foram baixados via CAPES e tiveram o título da pág. 1 conferido). PDFs gitignored — não vão para os repositórios públicos.
